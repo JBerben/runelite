@@ -42,4 +42,15 @@ public interface AntiDragConfig extends Config
 	{
 		return Constants.GAME_TICK_LENGTH / Constants.CLIENT_TICK_LENGTH; // one game tick
 	}
+
+	@ConfigItem(
+			keyName = "dragDelayBanks",
+			name = "Drag Delay in Banks?",
+			description = "Toggles whether or not to have the drag delay active in banks (Doesn't require Shift)",
+			position = 2
+	)
+	default boolean dragDelayBanks()
+	{
+		return false;
+	}
 }
