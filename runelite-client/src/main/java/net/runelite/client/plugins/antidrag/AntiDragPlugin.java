@@ -29,8 +29,13 @@ import java.awt.event.KeyEvent;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.events.FocusChanged;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -105,4 +110,34 @@ public class AntiDragPlugin extends Plugin implements KeyListener
 			client.setInventoryDragDelay(DEFAULT_DELAY);
 		}
 	}
+
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
+	{
+		if (widgetLoaded.getGroupId() == WidgetID.BANK_GROUP_ID ||
+		widgetLoaded.getGroupId() == WidgetID.BANK_INVENTORY_GROUP_ID)
+		{
+			setBankDragDelay();
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged configChanged)
+	{
+		setBankDragDelay();
+	}
+
+	private void setBankDragDelay()
+	{
+		final Widget bankItemContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+		if (config.dragDelayBanks() && bankItemContainer != null)
+		{
+			Widget[] items = bankItemContainer.getDynamicChildren();
+			for (Widget item : items)
+			{
+				item.setDragDeadTime(config.dragDelay());
+			}
+		}
+	}
+
 }
